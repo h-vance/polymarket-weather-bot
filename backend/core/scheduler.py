@@ -9,6 +9,9 @@ import logging
 
 from backend.config import settings
 from backend.models.database import SessionLocal, Trade, BotState, Signal
+from backend.core.execution_engine import execution_engine
+from backend.core.order_manager import check_active_orders
+from backend.core.position_manager import position_manager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("trading_bot")
@@ -84,22 +87,6 @@ async def weather_scan_and_trade_job():
             MAX_TRADES_PER_SCAN = 2
             MIN_TRADE_SIZE = 10
             MAX_TRADE_FRACTION = 0.05  # 5% max per trade for weather
-            MAX_TOTAL_PENDING = settings.MAX_TOTAL_PENDING_TRADES
-
-            today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-            daily_pnl = db.query(func.coalesce(func.sum(Trade.pnl), 0.0)).filter(
-                Trade.settled == True,
-                Trade.settlement_time >= today_start
-            ).scalar()
-
-            if daily_pnl <= -settings.DAILY_LOSS_LIMIT:
-                log_event("warning", f"Daily loss limit hit: ${daily_pnl:.2f}. Stopping trades.")
-                return
-
-            total_pending = db.query(Trade).filter(Trade.settled == False).count()
-            if total_pending >= MAX_TOTAL_PENDING:
-                log_event("info", f"Max pending trades reached ({total_pending}/{MAX_TOTAL_PENDING})")
-                return
 
             trades_executed = 0
             for signal in actionable[:MAX_TRADES_PER_SCAN]:
@@ -115,14 +102,19 @@ async def weather_scan_and_trade_job():
                 trade_size = max(trade_size, MIN_TRADE_SIZE)
                 trade_size = min(trade_size, settings.WEATHER_MAX_TRADE_SIZE)
 
-                if state.bankroll < MIN_TRADE_SIZE:
-                    log_event("warning", f"Bankroll too low: ${state.bankroll:.2f}")
+                if not position_manager.can_enter_trade(db, trade_size):
                     break
 
                 if trades_executed >= MAX_TRADES_PER_SCAN:
                     break
 
                 entry_price = signal.market.yes_price if signal.direction == "yes" else signal.market.no_price
+                token_id = signal.market.yes_token_id if signal.direction == "yes" else signal.market.no_token_id
+
+                # Execute order on the CLOB
+                exec_resp = await execution_engine.execute_order(token_id=token_id, price=entry_price, size=trade_size, side="BUY")
+                order_id = exec_resp.get("order_id")
+                execution_status = exec_resp.get("status", "error")
 
                 trade = Trade(
                     market_ticker=signal.market.market_id,
@@ -133,7 +125,9 @@ async def weather_scan_and_trade_job():
                     size=trade_size,
                     model_probability=signal.model_probability,
                     market_price_at_entry=signal.market_probability,
-                    edge_at_entry=signal.edge
+                    edge_at_entry=signal.edge,
+                    order_id=order_id,
+                    execution_status=execution_status
                 )
 
                 db.add(trade)
@@ -218,6 +212,14 @@ def start_scheduler():
         id="weather_settlement_job",
         replace_existing=True,
         next_run_time=datetime.now() + timedelta(seconds=15)
+    )
+
+    scheduler.add_job(
+        check_active_orders,
+        IntervalTrigger(seconds=15),
+        id="order_manager_job",
+        replace_existing=True,
+        next_run_time=datetime.now() + timedelta(seconds=5)
     )
 
     scheduler.start()

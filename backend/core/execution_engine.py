@@ -91,11 +91,30 @@ class ExecutionEngine:
             return False
 
         try:
-            self.client.cancel_order(order_id)
+            self.client.cancel(order_id)
             logger.info(f"Cancelled order {order_id}")
             return True
         except Exception as e:
             logger.error(f"Cancel failed for {order_id}: {e}")
             return False
+
+    async def get_order_status(self, order_id: str) -> Dict:
+        """
+        Fetches the current status of an order from the CLOB.
+        Returns a dictionary with status details including filled size.
+        """
+        if settings.SIMULATION_MODE:
+            # Simulate a fully filled order for testing
+            return {"status": "filled", "size_matched": "100.0", "original_size": "100.0"}
+
+        if not self.client:
+            return {"status": "error", "message": "Client not initialized"}
+
+        try:
+            order_info = self.client.get_order(order_id)
+            return order_info
+        except Exception as e:
+            logger.error(f"Failed to get order status for {order_id}: {e}")
+            return {"status": "error", "message": str(e)}
 
 execution_engine = ExecutionEngine()

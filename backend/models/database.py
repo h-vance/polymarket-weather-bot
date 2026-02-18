@@ -34,6 +34,11 @@ class Trade(Base):
     size = Column(Float)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
+    # CLOB Execution
+    order_id = Column(String, nullable=True)
+    execution_status = Column(String, default="simulated") # submitted, filled, canceled, partial, simulated
+    filled_size = Column(Float, default=0.0)
+
     # Settlement
     settled = Column(Boolean, default=False)
     settlement_time = Column(DateTime, nullable=True)
@@ -173,6 +178,19 @@ def ensure_schema():
         with engine.connect() as conn:
             with conn.begin():
                 conn.execute(text("ALTER TABLE trades ADD COLUMN market_type VARCHAR DEFAULT 'btc'"))
+
+    for col, coltype in [
+        ("order_id", "VARCHAR"),
+        ("execution_status", "VARCHAR DEFAULT 'simulated'"),
+        ("filled_size", "FLOAT DEFAULT 0.0"),
+    ]:
+        if col not in columns:
+            try:
+                with engine.connect() as conn:
+                    with conn.begin():
+                        conn.execute(text(f"ALTER TABLE trades ADD COLUMN {col} {coltype}"))
+            except Exception:
+                pass
 
     # Add calibration columns to signals table
     try:
