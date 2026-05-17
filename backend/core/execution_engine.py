@@ -6,6 +6,7 @@ import logging
 import asyncio
 from typing import Optional, Dict
 from py_clob_client.client import ClobClient
+from py_clob_client.clob_types import OrderType
 
 from backend.config import settings
 
@@ -65,7 +66,8 @@ class ExecutionEngine:
                 "price": price,
                 "side": side,
                 "size": size,
-                "fee_rate_bps": settings.FEE_RATE
+                "fee_rate_bps": settings.FEE_RATE,
+                "order_type": OrderType.GTC
             }
             # Note: synchronous call wrapping required in real app if using blocking client
             resp = self.client.create_and_post_order(order_args)

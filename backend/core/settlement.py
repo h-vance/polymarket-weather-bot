@@ -175,8 +175,14 @@ async def settle_pending_trades(db: Session) -> List[Trade]:
 
                 settled_trades.append(trade)
 
-                # Optional: Fire smart contract redemption via execution_engine here
-                # await execution_engine.redeem_position(trade.market_ticker)
+                # Fire smart contract redemption to realize profits
+                try:
+                    if not settings.SIMULATION_MODE and execution_engine.client:
+                        logger.info(f"Redeeming winning tokens for condition {trade.market_ticker}")
+                        # We must redeem the condition ID, which is the market_ticker in this context
+                        execution_engine.client.redeem(trade.market_ticker)
+                except Exception as e:
+                    logger.error(f"Failed to redeem tokens for {trade.market_ticker}: {e}")
 
                 # Update linked Signal for calibration
                 if trade.signal_id:

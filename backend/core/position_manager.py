@@ -27,7 +27,7 @@ class PositionManager:
             # If it's submitted, we count the requested size as exposure.
             # If it's filled, we count the filled size.
             if trade.execution_status == "submitted":
-                total_exposure += trade.size
+                total_exposure += (trade.size * trade.entry_price)
                 open_positions += 1
             elif trade.execution_status == "filled" or (trade.execution_status == "canceled" and trade.filled_size > 0):
                 total_exposure += (trade.filled_size * trade.entry_price)

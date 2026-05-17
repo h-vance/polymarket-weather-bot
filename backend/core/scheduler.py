@@ -111,8 +111,10 @@ async def weather_scan_and_trade_job():
                 entry_price = signal.market.yes_price if signal.direction == "yes" else signal.market.no_price
                 token_id = signal.market.yes_token_id if signal.direction == "yes" else signal.market.no_token_id
 
+                num_shares = round(trade_size / entry_price, 2)
+
                 # Execute order on the CLOB
-                exec_resp = await execution_engine.execute_order(token_id=token_id, price=entry_price, size=trade_size, side="BUY")
+                exec_resp = await execution_engine.execute_order(token_id=token_id, price=entry_price, size=num_shares, side="BUY")
                 order_id = exec_resp.get("order_id")
                 execution_status = exec_resp.get("status", "error")
 
@@ -122,7 +124,7 @@ async def weather_scan_and_trade_job():
                     event_slug=f"{signal.market.city_key}_{signal.market.target_date.strftime('%Y%m%d')}",
                     direction=signal.direction,
                     entry_price=entry_price,
-                    size=trade_size,
+                    size=num_shares,
                     model_probability=signal.model_probability,
                     market_price_at_entry=signal.market_probability,
                     edge_at_entry=signal.edge,
