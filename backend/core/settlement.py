@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional, List, Tuple
 from sqlalchemy.orm import Session
 
+from backend.config import settings
 from backend.models.database import Trade, BotState, Signal
 from backend.core.execution_engine import execution_engine
 
@@ -127,7 +128,7 @@ async def settle_pending_trades(db: Session) -> List[Trade]:
     try:
         # Only settle trades that have been filled and are awaiting settlement
         pending = db.query(Trade).filter(
-            Trade.settled == False, 
+            ~Trade.settled, 
             Trade.execution_status.in_(["filled", "canceled", "simulated"])
         ).all()
     except Exception as e:

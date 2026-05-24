@@ -7,7 +7,7 @@ from sqlalchemy import func
 from datetime import datetime
 from typing import Tuple
 
-from backend.models.database import SessionLocal, Trade, BotState
+from backend.models.database import Trade, BotState
 from backend.config import settings
 
 logger = logging.getLogger("position_manager")
@@ -18,7 +18,7 @@ class PositionManager:
         """
         Returns the total $ exposed in pending/unsettled trades and the count of open positions.
         """
-        pending_trades = db.query(Trade).filter(Trade.settled == False).all()
+        pending_trades = db.query(Trade).filter(~Trade.settled).all()
         
         total_exposure = 0.0
         open_positions = 0
@@ -59,7 +59,7 @@ class PositionManager:
         # Daily loss limit check
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         daily_pnl = db.query(func.coalesce(func.sum(Trade.pnl), 0.0)).filter(
-            Trade.settled == True,
+            Trade.settled,
             Trade.settlement_time >= today_start
         ).scalar()
 

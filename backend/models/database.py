@@ -1,11 +1,9 @@
 """Database models and connection for BTC 5-min trading bot."""
 from datetime import datetime
-from typing import Optional
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, JSON, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import inspect
-import enum
 
 from backend.config import settings
 

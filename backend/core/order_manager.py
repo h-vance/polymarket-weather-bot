@@ -3,9 +3,7 @@ Order Lifecycle Management.
 Tracks active orders on the CLOB, handles partial fills, and enforces timeouts.
 """
 import logging
-import asyncio
-from datetime import datetime, timedelta
-from typing import List
+from datetime import datetime
 
 from backend.models.database import SessionLocal, Trade, BotState
 from backend.core.execution_engine import execution_engine

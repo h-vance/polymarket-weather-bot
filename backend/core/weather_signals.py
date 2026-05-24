@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from backend.config import settings
-from backend.data.weather import fetch_ensemble_forecast, EnsembleForecast, CITY_CONFIG
+from backend.data.weather import fetch_ensemble_forecast
 from backend.core.market_scanner import WeatherMarket, fetch_polymarket_weather_markets
 from backend.models.database import SessionLocal, Signal
 from backend.core.book_listener import book_listener

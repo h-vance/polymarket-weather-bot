@@ -4,7 +4,7 @@ Handles safe mapping of YES/NO outcomes to their respective ERC1155 token IDs.
 """
 import json
 import logging
-from typing import Dict, Optional
+from typing import Dict
 
 logger = logging.getLogger("token_mapper")
 

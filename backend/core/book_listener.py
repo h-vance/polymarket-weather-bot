@@ -3,7 +3,6 @@ Order Book Listener for Polymarket CLOB.
 Ingests live order book depth, calculates mid-price, and provides freshness guards.
 """
 import logging
-import asyncio
 from typing import Optional, Tuple
 from py_clob_client.client import ClobClient
 

@@ -3,7 +3,6 @@ Polymarket CLOB Execution Engine.
 Handles order placement, cancellation, and partial fills safely.
 """
 import logging
-import asyncio
 from typing import Optional, Dict
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import OrderType

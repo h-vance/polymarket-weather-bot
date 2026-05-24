@@ -93,7 +93,7 @@ class EnsembleForecast:
         """Fraction of ensemble members with daily low above threshold."""
         if not self.member_lows:
             return 0.5
-        count = sum(1 for l in self.member_lows if l > threshold_f)
+        count = sum(1 for val in self.member_lows if val > threshold_f)
         return count / len(self.member_lows)
 
     def probability_low_below(self, threshold_f: float) -> float:

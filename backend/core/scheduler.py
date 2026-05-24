@@ -1,10 +1,8 @@
 """Background scheduler for Polymarket Weather autonomous trading."""
-import asyncio
 from datetime import datetime, timedelta
 from typing import List, Optional
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from sqlalchemy import func
 import logging
 
 from backend.config import settings
@@ -92,7 +90,7 @@ async def weather_scan_and_trade_job():
             for signal in actionable[:MAX_TRADES_PER_SCAN]:
                 existing = db.query(Trade).filter(
                     Trade.market_ticker == signal.market.market_id,
-                    Trade.settled == False
+                    ~Trade.settled
                 ).first()
 
                 if existing:
@@ -137,7 +135,7 @@ async def weather_scan_and_trade_job():
 
                 matching_signal = db.query(Signal).filter(
                     Signal.market_ticker == signal.market.market_id,
-                    Signal.executed == False,
+                    ~Signal.executed,
                 ).order_by(Signal.timestamp.desc()).first()
                 
                 if matching_signal:

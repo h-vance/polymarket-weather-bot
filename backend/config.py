@@ -1,5 +1,4 @@
 """Configuration settings for the Polymarket Weather Bot."""
-import os
 from pydantic_settings import BaseSettings
 from typing import Optional
 

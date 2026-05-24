@@ -1,17 +1,16 @@
 """FastAPI backend for Polymarket Weather Bot dashboard."""
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, Security
+from fastapi import FastAPI, Depends, HTTPException, WebSocket, Security
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import List, Optional
-import asyncio
 import os
 
 from backend.config import settings
 from backend.models.database import (
     get_db, init_db, SessionLocal,
-    Signal, Trade, BotState, AILog
+    Trade, BotState
 )
 from backend.core.weather_signals import scan_for_weather_signals
 
@@ -217,7 +216,7 @@ async def get_dashboard(db: Session = Depends(get_db)):
         ) for t in trades
     ]
 
-    equity_trades = db.query(Trade).filter(Trade.settled == True).order_by(Trade.timestamp).all()
+    equity_trades = db.query(Trade).filter(Trade.settled).order_by(Trade.timestamp).all()
     equity_curve = []
     cumulative_pnl = 0
     for trade in equity_trades:

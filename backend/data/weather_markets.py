@@ -3,7 +3,7 @@ import httpx
 import re
 import logging
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 from typing import List, Optional
 
 logger = logging.getLogger("trading_bot")
