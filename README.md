@@ -2,7 +2,7 @@
 
 An institutional-grade trading bot that identifies pricing inefficiencies in Polymarket weather prediction markets. Uses **ensemble weather forecasting** to trade directly against the **Polymarket Central Limit Order Book (CLOB)**. Features a professional React dashboard.
 
-![Python](https://img.shields.io/badge/python-3.10+-blue) ![React](https://img.shields.io/badge/react-18+-61DAFB) ![TypeScript](https://img.shields.io/badge/typescript-5.0+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=Python&logoColor=FFFFFF)](https://python.org)&nbsp;[![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=React&logoColor=000000)](https://react.dev)&nbsp;[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=TypeScript&logoColor=FFFFFF)](https://www.typescriptlang.org/)
 
 ![Dashboard](docs/dashboard.png)
 
