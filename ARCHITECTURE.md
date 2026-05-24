@@ -121,7 +121,7 @@ kalshi-trading-bot/
 │   └── recalibrate.py       # Threshold + weight adjustments
 ├── logs/
 │   └── trades.db            # SQLite database of all trades
-└── main.py                  # Entry point: runs the scan→research→price→execute loop
+└── ../run.py                # Entry point: starts the API server (imports from backend)
 ```
 
 ---
