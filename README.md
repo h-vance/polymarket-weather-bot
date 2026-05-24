@@ -9,7 +9,7 @@ An institutional-grade trading bot that identifies pricing inefficiencies in Pol
 ## Overview
 
 ### Strategy: Weather Temperature
-Scans weather temperature markets on **Polymarket** every 5 minutes. Uses 31-member GFS ensemble forecasts from Open-Meteo to estimate the probability of temperature thresholds being exceeded. Trades when edge > 8%. 
+Scans weather temperature markets on **Polymarket** every 5 minutes. Uses 31-member GFS ensemble forecasts from Open-Meteo to estimate the probability of temperature thresholds being exceeded. Trades when edge > 8%.
 
 ### Key Features
 
